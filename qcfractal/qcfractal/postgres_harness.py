@@ -516,9 +516,8 @@ class PostgresHarness:
         assert "#port = 5432" in psql_conf
         psql_conf = psql_conf.replace("#port = 5432", f"port = {self.config.port}")
 
-        # Change the location of the socket file
-        # Some OSs/Linux distributions will use a directory not writeable by a normal user
-        sock_dir = os.path.join(self.config.data_directory, "sock")
+        #Change the location of the socket file (configurable)
+        sock_dir = self.config.socket_directory
         os.makedirs(sock_dir, exist_ok=True)
 
         # Only use sockets if the sock_dir path would be less than 103 bytes
