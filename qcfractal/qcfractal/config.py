@@ -143,6 +143,12 @@ class DatabaseConfig(ConfigBase):
         None,
         description="Location to place the database if own == True. Default is [base_folder]/database if we own the databse",
     )
+
+    socket_directory: Optional[str] = Field(
+        None,
+        description="Location to place the database socket file if own == True. Default is [base_folder]/postgres_socket if we own the database",
+    )
+
     logfile: str = Field(
         None,
         description="Path to a file to use as the database logfile (if own == True). Default is [base_folder]/qcfractal_database.log",
@@ -171,6 +177,15 @@ class DatabaseConfig(ConfigBase):
     def _check_data_directory(cls, v, values):
         if values["own"] is True:
             return _make_abs_path(v, values["base_folder"], "postgres")
+        else:
+            return None
+
+    @validator("soceket_directory", always=True, check_fields=False)
+    def _check_socket_directory(cls, v, values):
+        if values["own"] is True:
+            if v is None:
+                v = os.path.join(values["base_folder"], "postgres_socket")
+            return _make_abs_path(v, values["base_folder"], "postgres_socket")
         else:
             return None
 
